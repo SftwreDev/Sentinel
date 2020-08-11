@@ -1,0 +1,17 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% block hd_content %}
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=tank.box.site.slug %}">{{ tank.box.site.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:rack_tank_per_box' slug=tank.box.slug %}">Box {{ tank.box.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Tank {{ tank.name }}</li>
+</ol>
+</nav>
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete {{ object }}?</p>
+    <input type="submit" class='btn btn-danger' name="" value="Confirm">
+  </form>
+
+{% endblock %}

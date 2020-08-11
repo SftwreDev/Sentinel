@@ -1,0 +1,385 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% load static %}
+{% block hd_content %}
+  <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=box.site.slug %}">{{ box.site.name }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Box {{ box.name }}</li>
+  </ol>
+  </nav>
+  <div class="row">
+    <img src="{% static 'images/container.png' %}" alt="box" width='40' height='40'>
+    <h1>Box {{ box.name }}</h1>
+
+    {% if user.is_authenticated %}
+    <div class="float-right">
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          +
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="{% url 'hydro_data:add_multiple_waterreading' slug=box.slug %}">Add Multiple Water Readings</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_airdata_for_box' slug=box.slug %}">Add Air Reading</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_energyconsumption_for_box' slug=box.slug %}">Add Energy Consumption</a>
+
+          {% if user.is_superuser %}
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_rack' slug=box.slug %}" class='btn btn-secondary'>Add Racks</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_tank' slug=box.slug %}" class='btn btn-secondary'>Add Tanks</a>
+          <a class='btn btn-default' href="{% url 'hydro_data:box_edit' slug=box.slug %}">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+            </svg>
+          </a>
+          <a class='btn btn-default' href="{% url 'hydro_data:box_remove' slug=box.slug %}">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm9.854 4.854a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
+            </svg>
+          </a>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+  {% if box.description %}
+    <p>{{ box.description_html|safe }}</p>
+  {% endif %}
+  <hr>
+
+  <nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link active" id="nav-racks-tab" data-toggle="tab" href="#nav-racks" role="tab" aria-controls="nav-racks" aria-selected="true">Racks</a>
+      <a class="nav-item nav-link" id="nav-tanks-tab" data-toggle="tab" href="#nav-tanks" role="tab" aria-controls="nav-tanks" aria-selected="false">Tanks</a>
+      <a class="nav-item nav-link" id="nav-box_air_activity_log-tab" data-toggle="tab" href="#nav-box_air_activity_log" role="tab" aria-controls="nav-box_air_activity_log" aria-selected="false">Air Reading</a>
+      <a class="nav-item nav-link" id="nav-box_water_activity_log-tab" data-toggle="tab" href="#nav-box_water_activity_log" role="tab" aria-controls="nav-box_water_activity_log" aria-selected="false">Water Reading</a>
+      <a class="nav-item nav-link" id="nav-box_energy_consumption-tab" data-toggle="tab" href="#nav-box_energy_consumption_log" role="tab" aria-controls="nav-box_energy_consumption_log" aria-selected="false">Energy Consumption</a>
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active mt-5" id="nav-racks" role="tabpanel" aria-labelledby="nav-racks-tab">
+      <div class="row">
+        <div class="col-md-6 col-sm-12 table-responsive">
+          <table class='table'>
+          {% for rack_loc in rack_list %}
+            {% for rack,loc in rack_loc.items %}
+              {% if rack.name|first == 'L' %}
+              <tr>
+                <td class="align-middle">
+                  <a href="{% url 'hydro_data:loc_per_rack' boxslug=box.slug rackslug=rack.slug %}">
+                    {{ rack.name }}
+                  </a>
+                </td class="align-middle">
+                {% for l in loc %}
+                  {% if l.is_open == '1' %}
+                  <td>
+                    <a href="{% url 'hydro_data:single_location' boxslug=rack.box.slug rackslug=rack.slug slug=l.slug %}">
+                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-circle" fill="limegreen" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <text x="50%" y="50%" text-anchor="middle" fill="black" alignment-baseline="middle" font-size="10">{{ l.name }}</text>
+                    </svg>
+                    </a>
+                  </td>
+                  {% else %}
+                  <td>
+                    <a href="{% url 'hydro_data:single_location' boxslug=rack.box.slug rackslug=rack.slug slug=l.slug %}">
+                      <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-circle-fill" fill="limegreen" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="8" cy="8" r="8"/>
+                        <text x="50%" y="50%" text-anchor="middle" fill="white" alignment-baseline="middle" font-size="10">{{ l.name }}</text>
+                      </svg>
+                    </a>
+                  </td>
+                  {% endif %}
+                {% endfor %}
+                  <td>
+                    <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        +
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="{% url 'hydro_data:add_seedlingbatch' boxslug=rack.box.slug pk=rack.pk %}">Seedling Batch</a>
+                        <a class="dropdown-item" href="{% url 'hydro_data:add_transplantbatch' boxslug=rack.box.slug pk=rack.pk %}">Transplant</a>
+                        <a class="dropdown-item" href="{% url 'hydro_data:add_seedlingwastage' boxslug=rack.box.slug pk=rack.pk %}">Seed Wastage</a>
+                        <a class="dropdown-item" href="{% url 'hydro_data:add_multiple_lightreading' boxslug=rack.box.slug pk=rack.pk %}">Light Reading</a>
+                        <a class="dropdown-item" href="{% url 'hydro_data:add_multiple_harvestdata' boxslug=rack.box.slug pk=rack.pk %}">Harvest</a>
+                        <a class="dropdown-item" href="{% url 'hydro_data:add_wastagedata' boxslug=rack.box.slug pk=rack.pk %}">Harvest Wastage</a>
+                        <a class="dropdown-item" href="{% url 'hydro_data:clear_plants' boxslug=rack.box.slug pk=rack.pk %}">Clear</a>
+                      </div>
+                    </div>
+                  </td>
+              </tr>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+          </table>
+        </div>
+        <div class="col-md-6 col-sm-12 table-responsive">
+          <table class='table'>
+          {% for rack_loc in rack_list %}
+            {% for rack,loc in rack_loc.items %}
+              {% if rack.name|first == 'R' %}
+              <tr>
+                <td class="align-middle">
+                  <a href="{% url 'hydro_data:loc_per_rack' boxslug=box.slug rackslug=rack.slug %}">
+                    {{ rack.name }}
+                  </a>
+                </td class="align-middle">
+                {% for l in loc %}
+                  {% if l.is_open == '1' %}
+                  <td>
+                    <a href="{% url 'hydro_data:single_location' boxslug=rack.box.slug rackslug=rack.slug slug=l.slug %}">
+                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-circle" fill="limegreen" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <text x="50%" y="50%" text-anchor="middle" fill="black" alignment-baseline="middle" font-size="10">{{ l.name }}</text>
+                    </svg>
+                    </a>
+                  </td>
+                  {% else %}
+                  <td>
+                    <a href="{% url 'hydro_data:single_location' boxslug=rack.box.slug rackslug=rack.slug slug=l.slug %}">
+                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-circle-fill" fill="limegreen" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="8" r="8"/>
+                      <text x="50%" y="50%" text-anchor="middle" fill="white" alignment-baseline="middle" font-size="10">{{ l.name }}</text>
+                    </svg>
+                    </a>
+                  </td>
+                  {% endif %}
+                {% endfor %}
+                <td>
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      +
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item" href="{% url 'hydro_data:add_seedlingbatch' boxslug=rack.box.slug pk=rack.pk %}">Seedling Batch</a>
+                      <a class="dropdown-item" href="{% url 'hydro_data:add_transplantbatch' boxslug=rack.box.slug pk=rack.pk %}">Transplant</a>
+                      <a class="dropdown-item" href="{% url 'hydro_data:add_seedlingwastage' boxslug=rack.box.slug pk=rack.pk %}">Seed Wastage</a>
+                      <a class="dropdown-item" href="{% url 'hydro_data:add_multiple_lightreading' boxslug=rack.box.slug pk=rack.pk %}">Light Reading</a>
+                      <a class="dropdown-item" href="{% url 'hydro_data:add_multiple_harvestdata' boxslug=rack.box.slug pk=rack.pk %}">Harvest</a>
+                      <a class="dropdown-item" href="{% url 'hydro_data:add_wastagedata' boxslug=rack.box.slug pk=rack.pk %}">Harvest Wastage</a>
+                      <a class="dropdown-item" href="{% url 'hydro_data:clear_plants' boxslug=rack.box.slug pk=rack.pk %}">Clear</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div class="tab-pane fade mt-5" id="nav-tanks" role="tabpanel" aria-labelledby="nav-tanks-tab">
+      <div class="row row-cols-1 row-cols-md-2">
+        {% for tank in tank_list %}
+          <div class="col mb-3">
+            <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+              <a href="{% url 'hydro_data:single_tank' boxslug=box.slug slug=tank.slug %}">
+              <img src="{% static 'images/water-tank.png' %}" class="card-img-top" alt="rack">
+              <div class="card-body">
+                <h3 class="card-title">Tank {{ tank.name }}</h3>
+                <p class="card-text">
+                  <small class="text-muted">
+                    {% for k,v in tank_last_activity_list.items %}
+                      {% if k == tank %}
+                        {% if v == None %}
+                        No activity yet.
+                        {% else %}
+                        Last activity {{ v }} ago
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  </small>
+                </p>
+              </div>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+    </div>
+    </div>
+    <div class="tab-pane fade mt-5" id="nav-box_air_activity_log" role="tabpanel" aria-labelledby="nav-box_air_activity_log-tab">
+      <div class="table-responsive mt-4">
+        <table class='table table-hover text-center' id='box-air-activity-log'>
+          <thead>
+            <th class='align-middle'>Date</th>
+            <th class='align-middle'>Time</th>
+            <th class='align-middle'>Type</th>
+            <th class='align-middle'>Relative Humidity</th>
+            <th class='align-middle'>Temperature</th>
+            <th class='align-middle'>CO2 Level</th>
+            <th class='align-middle'>Staff</th>
+          </thead>
+          {% for activity in air_activities %}
+            <tr>
+              <td class='align-middle'>{{ activity.date|date:"m/d" }}</td>
+              <td class='align-middle'>{{ activity.time }}</td>
+              <td class='align-middle'>
+                <a href="{% url 'hydro_data:single_airreading' boxslug=activity.box.slug pk=activity.pk %}">
+                  <span class='badge badge-secondary'>{{ activity.get_model_type }}</span>
+                </a>
+              </td>
+              <td class='align-middle'>
+                {% if activity.current_relative_humidity %}
+                {{ activity.current_relative_humidity }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.current_temp %}
+                {{ activity.current_temp }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.current_co2_level %}
+                {{ activity.current_co2_level }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>{{ activity.staff }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+    <div class="tab-pane fade mt-5" id="nav-box_water_activity_log" role="tabpanel" aria-labelledby="nav-box_water_activity_log-tab">
+      <div class="table-responsive mt-4">
+        <table class='table table-hover text-center' id='box-water-activity-log'>
+          <thead>
+            <th class='align-middle'>Date</th>
+            <th class='align-middle'>Time</th>
+            <th class='align-middle'>Type</th>
+            <th class='align-middle'>Tank</th>
+            <th class='align-middle'>Prev pH</th>
+            <th class='align-middle'>Current pH</th>
+            <th class='align-middle'>Prev EC</th>
+            <th class='align-middle'>Current EC</th>
+            <th class='align-middle'>Acid Amount</th>
+            <th class='align-middle'>Acid</th>
+            <th class='align-middle'>Nutrient Amount</th>
+            <th class='align-middle'>Nutrient</th>
+            <th class='align-middle'>Water Level</th>
+            <th class='align-middle'>Staff</th>
+          </thead>
+          {% for activity in water_activities %}
+            <tr>
+              <td class='align-middle'>{{ activity.date|date:"m/d" }}</td>
+              <td class='align-middle'>{{ activity.time }}</td>
+              <td class='align-middle'>
+                <a href="{% url 'hydro_data:single_waterreading' boxslug=activity.box.slug tankslug=activity.tank.slug pk=activity.pk %}">
+                  <span class='badge badge-primary'>{{ activity.get_model_type }}</span>
+                </a>
+              </td>
+              <td class='align-middle'>
+                {% if activity.tank %}
+                {{ activity.tank.name }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.prev_ph %}
+                {{ activity.prev_ph }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.current_ph %}
+                {{ activity.current_ph }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.prev_ec %}
+                {{ activity.prev_ec }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.current_ec %}
+                {{ activity.current_ec }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.acid_used_ml %}
+                {{ activity.acid_used_ml }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.acid_type %}
+                {{ activity.acid_type }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.nutrient_used_ml %}
+                {{ activity.nutrient_used_ml }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.nutrient_type %}
+                {{ activity.nutrient_type }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.water_level_liters %}
+                {{ activity.water_level_liters }}L
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>{{ activity.staff }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+    <div class="tab-pane fade mt-5" id="nav-box_energy_consumption_log" role="tabpanel" aria-labelledby="nav-energyc-tab">
+      <div class="table-responsive mt-4">
+        <table class='table table-hover text-center' id='box-energyc-activity-log'>
+          <thead>
+            <th class='align-middle'>Date</th>
+            <th class='align-middle'>Time</th>
+            <th class='align-middle'>Energy Consumption</th>
+            <th class='align-middle'>Staff</th>
+          </thead>
+          {% for activity in energyconsumption %}
+            <tr>
+              <td class='align-middle'>{{ activity.date|date:"m/d" }}</td>
+              <td class='align-middle'>{{ activity.time }}</td>
+              <td class='align-middle'>
+                {% if activity.electrical_reading %}
+                {{ activity.electrical_reading }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>{{ activity.staff }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

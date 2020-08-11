@@ -1,0 +1,42 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% load static %}
+{% block hd_content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'hydro_data:items' %}">Items</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Produce Types</li>
+    </ol>
+  </nav>
+  <div class="row">
+    <h1>Produce Types ({{ object_list.count }})</h1>
+  </div>
+  <hr>
+  <div class="row row-cols-1 row-cols-md-2">
+    {% for produce_type in object_list %}
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:single_produce_type' slug=produce_type.slug %}">
+        <img src="{% static 'images/produce.png' %}" class="card-img-top" alt="box">
+        <div class="card-body">
+          <h3 class="card-title">{{ produce_type.name }}</h3>
+        </div>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:create_producetype' %}">
+          <svg width="13em" height="13em" viewBox="0 0 16 16" class="bi bi-plus-circle card-img-top" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h3.5V4a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8z"/>
+            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+          </svg>
+        <div class="card-body">
+          <h3 class="card-title">Add more</h3>
+        </div>
+        </a>
+      </div>
+    </div>
+</div>
+{% endblock %}

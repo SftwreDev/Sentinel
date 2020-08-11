@@ -1,0 +1,61 @@
+{% extends 'hydro_data/hydro_data_base.html' %}
+
+
+{% block hd_content %}
+
+<!-- <div class="container"> -->
+    <h5>Deliver Data Table</h5>
+    <div class="table-responsive table-bordered">
+        <table class="table">
+            
+            <thead class="text-center" style='font-size: 11px;'>
+                <tr>
+                  <th scope="col">Delivery Date</th>
+                  <th scope="col">Order No.</th>
+                  <th scope="col">First Name</th>
+                  <th scope="col">Last Name</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">MOP</th>
+                  <th scope="col">Delivery Fee</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Discount Code</th>
+                  <th scope="col">Total Price</th>
+                  <th scope="col">Products</th>
+                  <th scope="col">Product Weight</th>
+                  <th scope="col">Product Qty</th>
+                  <th scope="col">Product Price</th>
+                  <th scope="col">Order Summary</th>
+                  <th scope="col">Total Weight</th>
+                  <th scope="col">Order</th>
+                </tr>
+              </thead>
+              <tbody style='font-size: 11px;'>
+                  {% for list in delivery_data %}
+                    <td>{{ list.delivery_date }}</td>
+                    <td>{{ list.order_no }}</td>
+                    <td>{{ list.f_name }}</td>
+                    <td>{{ list.l_name }}</td>
+                    <td>{{ list.address }}</td>
+                    <td>{{ list.phone }}</td>
+                    <td>{{ list.email }}</td>
+                    <td>{{ list.mop }}</td>
+                    <td>{{ list.delivery_fee }}</td>
+                    <td>{{ list.status }}</td>
+                    <td>{{ list.discount_code }}</td>
+                    <td>{{ list.total_price }}</td>
+                    <td>{{ list.products }}</td>
+                    <td>{{ list.prod_weight }}</td>
+                    <td>{{ list.prod_qty }}</td>
+                    <td>{{ list.prod_price }}</td>
+                    <td>{{ list.order }}</td>
+                    <td>{{ list.total_weight }}</td>
+                    <td>{{ list.order_sum }}</td>
+                  {% endfor %}
+              </tbody>
+        </table>
+      </div>
+<!-- </div> -->
+
+{% endblock %}

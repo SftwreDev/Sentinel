@@ -1,0 +1,28 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+{% block hd_content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=harvestdata.site.slug %}">{{ harvestdata.site.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:rack_tank_per_box' slug=harvestdata.box.slug %}">Box {{ harvestdata.box.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:loc_per_rack' boxslug=harvestdata.box.slug rackslug=harvestdata.rack.slug %}">Rack {{ harvestdata.rack.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:single_location' boxslug=harvestdata.box.slug rackslug=harvestdata.rack.slug slug=harvestdata.square_meter_id.slug %}">SQM ID {{ harvestdata.square_meter_id.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Harvest Data #{{ harvestdata.pk }}</li>
+  </ol>
+  </nav>
+  <h4>Harvest Data</h4>
+  <form method="POST">
+  	{% csrf_token %}
+    <div class="table-responsive">
+      <div class="col-5">
+        <table class='table'>
+          {{ form.as_table }}
+        </table>
+      </div>
+    </div>
+  		<button type="submit" class="btn btn-primary btn-large">Update</button>
+  </form>
+</div>
+{% endblock %}

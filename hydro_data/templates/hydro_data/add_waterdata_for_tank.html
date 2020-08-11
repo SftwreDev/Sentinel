@@ -1,0 +1,105 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+{% block hd_content %}
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=tank.box.site.slug %}">{{ tank.box.site.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:rack_tank_per_box' slug=tank.box.slug %}">Box {{ tank.box.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Tank {{ tank.name }}</li>
+</ol>
+</nav>
+<div class="container-fluid">
+  <h1>Add Water Data for {{ tank }}</h1>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="row form-row spacer">
+      <div class="col-1">
+        <label>{{form.activity.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.activity }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.prev_ph.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.prev_ph }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.current_ph.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.current_ph }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.prev_ec.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.prev_ec }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.current_ec.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.current_ec }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.acid_used_ml.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.acid_used_ml }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.acid_type.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.acid_type }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.nutrient_used_ml.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.nutrient_used_ml }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.nutrient_type.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.nutrient_type }}
+        </div>
+      </div>
+      <div class="col-1">
+        <label>{{form.water_level_liters.label}}</label>
+      </div>
+      <div class="col-1">
+        <div class="input-group">
+          {{ form.water_level_liters }}
+        </div>
+      </div>
+    </div>
+    <div class="row spacer">
+      <div class="col-4 offset-2">
+          <button type="submit" class="btn btn-block btn-primary">Add reading</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

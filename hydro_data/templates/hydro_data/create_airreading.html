@@ -1,0 +1,31 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h1>Create new Air Reading</h1>
+    <form method='POST' id="airReadingForm" data-boxes-url="{% url 'hydro_data:ajax_load_boxes' %}">
+      {% csrf_token %}
+      <table class='table'>
+        {{ form.as_table }}
+      </table>
+      <input type="submit" class="btn btn-primary" value='Create'></input>
+    </form>
+  </div>
+
+  <script   src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="   crossorigin="anonymous"></script>
+  <script type='text/javascript'>
+    $("#id_site").change(function () {
+      var url = $("#airReadingForm").attr("data-boxes-url");
+      var site = $(this).val();
+      $.ajax({
+        url: url,
+        data: {
+          'site': site,
+        },
+        success: function (data) {
+          $("#id_box").html(data);
+        }
+      });
+    });
+  </script>
+{% endblock %}

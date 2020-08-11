@@ -1,0 +1,103 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% load static %}
+{% block hd_content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">Items</li>
+    </ol>
+  </nav>
+  <h1>Items</h1>
+  <hr>
+  <div class="row row-cols-1 row-cols-md-2">
+    <div class="col-3 mb-3">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:produce_type_list' %}">
+        <img src="{% static 'images/produce.png' %}" class="card-img-top" alt="rack">
+        <div class="card-body">
+          <h3 class="card-title">Produce</h3>
+          <p class="card-text">
+            <small class="text-muted">
+              {{ produce_types.count }} produce types
+          </small>
+          </p>
+        </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-3 mb-3">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:acid_list' %}">
+        <img src="{% static 'images/acid.png' %}" class="card-img-top" alt="rack">
+        <div class="card-body">
+          <h3 class="card-title">Acid</h3>
+          <p class="card-text">
+            <small class="text-muted">
+              {{ acids.count }} acid types
+          </small>
+          </p>
+        </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-3 mb-3">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:nutrient_list' %}">
+        <img src="{% static 'images/nutrient.png' %}" class="card-img-top" alt="rack">
+        <div class="card-body">
+          <h3 class="card-title">Nutrient</h3>
+          <p class="card-text">
+            <small class="text-muted">
+              {{ nutrients.count }} nutrient types
+          </small>
+          </p>
+        </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-3 mb-3">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:activity_list' %}">
+        <img src="{% static 'images/activity.png' %}" class="card-img-top" alt="rack">
+        <div class="card-body">
+          <h3 class="card-title">Activity</h3>
+          <p class="card-text">
+            <small class="text-muted">
+              {{ activities.count }} activities
+          </small>
+          </p>
+        </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-3 mb-3">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:growmedium_list' %}">
+        <img src="{% static 'images/soil.png' %}" class="card-img-top" alt="rack">
+        <div class="card-body">
+          <h3 class="card-title">Grow Medium</h3>
+          <p class="card-text">
+            <small class="text-muted">
+              {{ growmediums.count }} grow mediums
+          </small>
+          </p>
+        </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-3 mb-3">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:tray_list' %}">
+        <img src="{% static 'images/seed.png' %}" class="card-img-top" alt="rack">
+        <div class="card-body">
+          <h3 class="card-title">Tray</h3>
+          <p class="card-text">
+            <small class="text-muted">
+              {{ trays.count }} trays
+          </small>
+          </p>
+        </div>
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

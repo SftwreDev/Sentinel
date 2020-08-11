@@ -1,0 +1,34 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+{% block hd_content %}
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=location.rack.box.site.slug %}">{{ location.rack.box.site.name }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'hydro_data:rack_tank_per_box' slug=location.rack.box.slug %}">Box {{ location.rack.box.name }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'hydro_data:loc_per_rack' boxslug=location.rack.box.slug rackslug=location.rack.slug %}">Rack {{ location.rack.name }}</a></li>
+<li class="breadcrumb-item active" aria-current="page">SQM ID {{ location.name }}</li>
+</ol>
+</nav>
+<div class="container-fluid">
+  <h1>Add Light Data for {{ location }}</h1>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="row form-row spacer">
+      <div class="col-1">
+        <label>{{form.par_reading.label}}</label>
+      </div>
+      <div class="col-5">
+        <div class="input-group">
+          {{ form.par_reading }}
+        </div>
+      </div>
+    </div>
+    <div class="row spacer">
+      <div class="col-4 offset-2">
+          <button type="submit" class="btn btn-block btn-primary">Add Light Reading</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

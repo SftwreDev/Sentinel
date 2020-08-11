@@ -1,0 +1,19 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% block hd_content %}
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=wastagedata.site.slug %}">{{ wastagedata.site.name }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'hydro_data:rack_tank_per_box' slug=wastagedata.box.slug %}">Box {{ wastagedata.box.name }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'hydro_data:loc_per_rack' boxslug=wastagedata.box.slug rackslug=wastagedata.rack.slug %}">Rack {{ wastagedata.rack.name }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'hydro_data:single_location' boxslug=wastagedata.box.slug rackslug=wastagedata.rack.slug slug=wastagedata.square_meter_id.slug %}">SQM ID {{ wastagedata.square_meter_id.name }}</a></li>
+<li class="breadcrumb-item active" aria-current="page">Wastage Data #{{ wastagedata.pk }}</li>
+</ol>
+</nav>
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete {{ object }}?</p>
+    <input type="submit" class='btn btn-danger' name="" value="Confirm">
+  </form>
+
+{% endblock %}

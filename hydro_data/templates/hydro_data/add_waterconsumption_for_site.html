@@ -1,0 +1,32 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+{% block hd_content %}
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{{ site.name }}</li>
+</ol>
+</nav>
+<div class="container-fluid">
+  <h1>Add Water Consumption for {{ site }}</h1>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="row spacer">
+      <div class="col-3">
+        <label>{{form.water_reading.label}}</label>
+      </div>
+      <div class="col-9">
+        <div class="input-group">
+          {{ form.water_reading }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row spacer">
+      <div class="col-4 offset-2">
+          <button type="submit" class="btn btn-block btn-primary">Add reading</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

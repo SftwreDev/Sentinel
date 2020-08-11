@@ -1,0 +1,201 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% load static %}
+{% block hd_content %}
+  <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=rack.box.site.slug %}">{{ rack.box.site.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:rack_tank_per_box' slug=rack.box.slug %}">Box {{ rack.box.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Rack {{ rack.name }}</li>
+  </ol>
+  </nav>
+  <div class="row">
+    <img src="{% static 'images/rack.png' %}" alt="box" width='40' height='40'>
+    <h1>Rack {{ rack.name }}</h1>
+    {% if user.is_authenticated %}
+    <div class="float-right">
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          +
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="{% url 'hydro_data:add_seedlingbatch' boxslug=rack.box.slug pk=rack.pk %}">Seedling Batch</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_transplantbatch' boxslug=rack.box.slug pk=rack.pk %}">Transplant</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_seedlingwastage' boxslug=rack.box.slug pk=rack.pk %}">Seed Wastage</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_multiple_lightreading' boxslug=rack.box.slug pk=rack.pk %}">Light Reading</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_multiple_harvestdata' boxslug=rack.box.slug pk=rack.pk %}">Harvest</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_wastagedata' boxslug=rack.box.slug pk=rack.pk %}">Harvest Wastage</a>
+          <a class="dropdown-item" href="{% url 'hydro_data:clear_plants' boxslug=rack.box.slug pk=rack.pk %}">Clear</a>
+
+          {% if user.is_superuser %}
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'hydro_data:add_location' boxslug=rack.box.slug slug=rack.slug %}">Add SQM ID's</a>
+          <a class='btn btn-default' href="{% url 'hydro_data:rack_edit' boxslug=rack.box.slug pk=rack.pk %}">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+            </svg>
+          </a>
+          <a class='btn btn-default' href="{% url 'hydro_data:rack_remove' boxslug=rack.box.slug pk=rack.pk %}">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm9.854 4.854a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
+            </svg>
+          </a>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <hr>
+
+  <nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link active" id="nav-sqm_id-tab" data-toggle="tab" href="#nav-sqm_id" role="tab" aria-controls="nav-sqm_id" aria-selected="true">SQM ID's</a>
+      <a class="nav-item nav-link" id="nav-activity_log-tab" data-toggle="tab" href="#nav-activity_log" role="tab" aria-controls="nav-activity_log" aria-selected="false">Activity Log</a>
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-sqm_id" role="tabpanel" aria-labelledby="nav-sqm_id-tab">
+      <div class="row row-cols-1 row-cols-md-2 mt-4">
+        {% for loc in loc_list %}
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+              <a href="{% url 'hydro_data:single_location' boxslug=rack.box.slug rackslug=rack.slug slug=loc.slug %}">
+                {% if loc.is_open == '1' %}
+                  <img src="{% static 'images/noplant.png' %}" class="card-img-top" alt="location">
+                {% else %}
+                  <img src="{% static 'images/plant.png' %}" class="card-img-top" alt="location">
+                {% endif %}
+              <div class="card-body">
+                <h3 class="card-title">{{ loc.name }}</h3>
+                <p class="card-text">
+                  <small class="text-muted">
+                    {% for k,v in last_activity_list.items %}
+                      {% if k == loc %}
+                        {% if v == None %}
+                        No activity yet.
+                        {% else %}
+                        Last activity {{ v }} ago
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                </small>
+              </p>
+              </div>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="tab-pane fade" id="nav-activity_log" role="tabpanel" aria-labelledby="nav-activity_log-tab">
+      <div class="table-responsive mt-4">
+        <table class='table table-hover text-center' id='rack-activity-log'>
+          <thead>
+            <th class='align-middle'>Date</th>
+            <th class='align-middle'>Time</th>
+            <th class='align-middle'>Type</th>
+            <th class='align-middle'>SQM ID</th>
+            <th class='align-middle'>Batch</th>
+            <th class='align-middle'>Weight</th>
+            <th class='align-middle'>Wastage</th>
+            <th class='align-middle'>PAR Reading</th>
+            <th class='align-middle'>Grow Medium</th>
+            <th class='align-middle'>Tray</th>
+            <th class='align-middle'>Produce</th>
+            <th class='align-middle'>Staff</th>
+          </thead>
+          {% for activity in activities %}
+            <tr>
+              <td class='align-middle'>{{ activity.date|date:"m/d" }}</td>
+              <td class='align-middle'>{{ activity.time }}</td>
+              <td class='align-middle'>
+                {% if activity.get_model_type == 'HARVEST' %}
+                <a href="{% url 'hydro_data:single_harvestdata' boxslug=rack.box.slug rackslug=rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+                  <span class='badge badge-danger'>{{ activity.get_model_type }}</span>
+                </a>
+                {% elif activity.get_model_type == 'PLANT' %}
+                <a href="{% url 'hydro_data:single_plantingdata' boxslug=rack.box.slug rackslug=rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+                  <span class='badge badge-success'>{{ activity.get_model_type }}</span>
+                </a>
+                {% elif activity.get_model_type == 'TRANSPLANT' %}
+                <a href="{% url 'hydro_data:single_transplantdata' boxslug=rack.box.slug rackslug=rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+                  <span class='badge badge-success'>{{ activity.get_model_type }}</span>
+                </a>
+                {% elif activity.get_model_type == 'SEEDLING WASTAGE' %}
+                <a href="{% url 'hydro_data:single_seedlingwastagedata' boxslug=rack.box.slug rackslug=rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+                  <span class='badge badge-danger'>{{ activity.get_model_type }}</span>
+                </a>
+                {% elif activity.get_model_type == 'WASTAGE' %}
+                <a href="{% url 'hydro_data:single_wastagedata' boxslug=rack.box.slug rackslug=rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+                  <span class='badge badge-danger'>{{ activity.get_model_type }}</span>
+                </a>
+                {% else %}
+                <a href="{% url 'hydro_data:single_lightreading' boxslug=rack.box.slug rackslug=rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+                  <span class='badge badge-warning'>{{ activity.get_model_type }}</span>
+                </a>
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {{ activity.square_meter_id.name }}
+              </td>
+              <td class='align-middle'>
+                {% if activity.seedling_batch_no %}
+                {{ activity.seedling_batch_no.num }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.harvest_weight_kg %}
+                {{ activity.harvest_weight_kg }} kg
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.wastage_kg %}
+                {{ activity.wastage_kg }} kg
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.par_reading %}
+                {{ activity.par_reading }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.growmedium %}
+                {{ activity.growmedium }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.tray %}
+                {{ activity.tray }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>
+                {% if activity.produce_type %}
+                {{ activity.produce_type }}
+                {% else %}
+                --
+                {% endif %}
+              </td>
+              <td class='align-middle'>{{ activity.staff }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

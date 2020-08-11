@@ -1,0 +1,53 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+{% block hd_content %}
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=box.site.slug %}">{{ box.site.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Box {{ box.name }}</li>
+</ol>
+</nav>
+<div class="container-fluid">
+  <h1>Add Air Data for {{ box }}</h1>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="row spacer">
+      <div class="col-3">
+        <label>{{form.current_relative_humidity.label}}</label>
+      </div>
+      <div class="col-9">
+        <div class="input-group">
+          {{ form.current_relative_humidity }}
+        </div>
+      </div>
+    </div>
+    <div class="row spacer">
+      <div class="col-3">
+        <label>{{form.current_temp.label}}</label>
+      </div>
+      <div class="col-9">
+        <div class="input-group">
+          {{ form.current_temp }}
+        </div>
+      </div>
+    </div>
+    <div class="row spacer">
+      <div class="col-3">
+        <label>{{form.current_co2_level.label}}</label>
+      </div>
+      <div class="col-9">
+        <div class="input-group">
+          {{ form.current_co2_level }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row spacer">
+      <div class="col-4 offset-2">
+          <button type="submit" class="btn btn-block btn-primary">Add reading</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

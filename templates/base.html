@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>
+      Hydro Farm
+      {% if page_title %}
+      - {{ page_title }}
+      {% endif %}
+    </title>
+    <link rel="stylesheet" href="{% static '/hydro_data/css/master.css' %}">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type='image/x-icon' >
+    <link rel="manifest" href="/site.webmanifest">
+
+    {# DataTables #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
+
+    <!-- Alternative to Bootstrap 3 Glyphicons -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+  </head>
+  <body>
+    {% include "_modal.html" %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" role="navigation" id="navbar">
+      <div class="container">
+        <div class="navbar-nav align-items-center">
+          <a class="navbar-brand mynav" href="{% url 'home' %}"><img src="{% static "images/logo.png" %}" alt="Hydro Farm" class="img-rounded center-block" width='150'></a>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <div class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+            <span class="navbar-text">
+              <strong>@{{ request.user }}</strong> |
+            </span>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Add
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item disabled text-muted">Quick Actions</a>
+                <a class="dropdown-item" href="{% url 'hydro_data:create_plantingdata' %}">Seedling Batch</a>
+                <a class="dropdown-item" href="{% url 'hydro_data:create_harvestdata' %}">Harvest Data</a>
+                {% if user.is_superuser %}
+                <a class="dropdown-item" href="{% url 'hydro_data:create_lightreading' %}">Light Reading</a>
+                <a class="dropdown-item" href="{% url 'hydro_data:create_airreading' %}">Air Reading</a>
+                <a class="dropdown-item" href="{% url 'hydro_data:create_waterreading' %}">Water Reading</a>
+                <a class="dropdown-item" href="{% url 'hydro_data:packing_log' %}">Packing Log</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'hydro_data:create_site' %}">Site</a>
+                <a class="dropdown-item" href="{% url 'hydro_data:create_box_with_racks' %}">Box & Rack</a>
+                <a class="dropdown-item" href="{% url 'hydro_data:create_tank' %}">Tank</a>
+                <a class="dropdown-item" href="{% url 'hydro_data:create_location' %}">SQM ID</a>
+                <button id ='create_weight_category' class=" dropdown-item" >Weight Category</button>
+                {% endif %}
+              </div>
+            </li>
+              <a class="nav-item nav-link" href="{% url 'hydro_data:batches' %}" class="btn btn-simple">Batches</a>
+              <a class="nav-item nav-link" href="{% url 'hydro_data:site_list' %}" class="btn btn-simple">Sites</a>
+              {% if user.is_superuser %}
+              <a class="nav-item nav-link" href="{% url 'hydro_data:items' %}" class="btn btn-simple">Items</a>
+              <a class="nav-item nav-link" href="{% url 'admin:index' %}" class="btn btn-simple">Admin</a>
+              {% endif %}
+              <a class="nav-item nav-link" href="{% url 'logout' %}" class="btn btn-simple">Log out</a>
+            {% else %}
+              <a class="nav-item nav-link" href="{% url 'login' %}" class="btn btn-simple">Log in</a>
+              <a class="nav-item nav-link" href="{% url 'signup' %}" class="btn btn-simple">Sign up</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      {% block content %}
+
+      {% endblock %}
+
+
+      
+      
+  
+    
+    </div>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="   crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" charset="utf-8"></script>
+  <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" charset="utf-8"></script>
+
+  <!-- -----------------------------BOOTSTRAP MODAL---------------------------------- -->
+
+      <!-- <script src="{% static 'assets/js/bootstrap.min.js' %}"></script> -->
+      <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+      <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+      <!-- You can alternatively load the minified version -->
+      <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
+
+  <!-- --------------------------------------------------------------- -->
+
+<script type="text/javascript">
+    $(document).ready(function() {
+    $('#location-activity-log').DataTable({
+"bSort" : false
+});
+  } );
+    $(document).ready(function() {
+    $('#rack-activity-log').DataTable({
+"bSort" : false
+});
+  } );
+    $(document).ready(function() {
+    $('#box-air-activity-log').DataTable({
+"bSort" : false
+});
+  } );
+  $(document).ready(function() {
+  $('#box-water-activity-log').DataTable({
+"bSort" : false
+});
+  } );
+  </script>
+  {% comment %} <footer class='footer fixed-bottom'>
+    <!-- Copyright -->
+    <div class="footer-copyright text-center text-black-50 py-3">© 2020 Copyright:
+      <a class="dark-grey-text" href="https://www.facebook.com/MattDoesntStop/"> Ronnel Robles</a>
+    </div>
+    <!-- Copyright -->
+  </footer> {% endcomment %}
+
+
+</html>

@@ -1,0 +1,16 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% block hd_content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'hydro_data:items' %}">Items</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'hydro_data:activity_list' %}">Activities</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ activity.name }}</li>
+    </ol>
+  </nav>
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete {{ object }}?</p>
+    <input type="submit" class='btn btn-danger' name="" value="Confirm">
+  </form>
+
+{% endblock %}

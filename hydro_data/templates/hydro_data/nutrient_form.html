@@ -1,0 +1,25 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+{% block hd_content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'hydro_data:items' %}">Items</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'hydro_data:nutrient_list' %}">Nutrients</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ nutrient.name }}</li>
+    </ol>
+  </nav>
+  <h4>Nutrient</h4>
+  <form method="POST">
+  	{% csrf_token %}
+    <div class="table-responsive">
+      <div class="col-5">
+        <table class='table'>
+          {{ form.as_table }}
+        </table>
+      </div>
+    </div>
+  		<button type="submit" class="btn btn-primary btn-large">Update</button>
+  </form>
+</div>
+{% endblock %}

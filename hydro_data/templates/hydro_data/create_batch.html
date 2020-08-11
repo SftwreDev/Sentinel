@@ -1,0 +1,14 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h1>Create new batch</h1>
+    <form method='POST'>
+      {% csrf_token %}
+      <table class='table'>
+        {{ form.as_table }}
+      </table>
+      <input type="submit" class="btn btn-primary" value='Create'></input>
+    </form>
+  </div>
+{% endblock %}

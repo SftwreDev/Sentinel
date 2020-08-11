@@ -1,0 +1,138 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% load crispy_forms_tags %}
+{% block hd_content %}
+<div class="container">
+
+  <form method="POST" >
+    {% csrf_token %}
+    <h4 class="display-4">Packing Log Form</h4>
+    <hr>
+    <div class="row spacer">
+        
+        <div class="col-sm-2"></div>
+
+        <div class="col-sm-8">
+            <div class="col-sm-12">
+                <div class="card p-3">  
+                    {{packinglogdataform.date_packaged|as_crispy_field}}
+                    {{packinglogdataform.date_harvested|as_crispy_field}}
+                    {{packinglogdataform.custom_name|as_crispy_field}}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2"></div>
+    </div>
+    <hr>
+    {{ formset.management_form }}
+    {% for form in formset %}
+    <div class="row form-row spacer">
+      <div class="col-sm-2"></div>
+        <div class='col-sm-7'>
+            <div class="col-sm-12">
+                <div class="card p-3">
+                    {{form.prod_name|as_crispy_field}}
+                    {{ form.no_of_packs|as_crispy_field }}
+                </div>
+            </div>   
+        </div> 
+        <div class="col-sm-3">
+            <button class="btn btn-success add-form-row offset-1">+</button>
+        </div> 
+      </div>
+    </div>
+    {% endfor %}
+    <hr>
+
+    <div class="row">
+        <div class="col-sm-2"></div>
+
+        <div class="col-sm-8">
+            <div class="col-sm-12">
+                <div class="card p-3">
+                    {{ packinglogdataform.packaged_by|as_crispy_field}}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <button type="submit" class="btn btn-primary btn-block mt-4 ">Submit</button>
+        </div>
+        <div class="col-sm-2"></div>
+        
+    </div>
+        
+    
+       
+  </form>
+</div>
+
+  <script   src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="   crossorigin="anonymous"></script>
+  <script type='text/javascript'>
+    function updateElementIndex(el, prefix, ndx) {
+        var id_regex = new RegExp('(' + prefix + '-\\d+)');
+        var replacement = prefix + '-' + ndx;
+        if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+        if (el.id) el.id = el.id.replace(id_regex, replacement);
+        if (el.name) el.name = el.name.replace(id_regex, replacement);
+    }
+    function cloneMore(selector, prefix) {
+        var newElement = $(selector).clone(true);
+        var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+        newElement.find(':input').each(function() {
+        if ($(this).attr('name')) {
+        var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+        var id = 'id_' + name;
+        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+        }
+        });
+        newElement.find('label').each(function() {
+            var forValue = $(this).attr('for');
+            if (forValue) {
+              forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+              $(this).attr({'for': forValue});
+            }
+        });
+        total++;
+        $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+        $(selector).after(newElement);
+        var conditionRow = $('.form-row:not(:last)');
+        conditionRow.find('.btn.add-form-row')
+        .removeClass('btn-success').addClass('btn-danger')
+        .removeClass('add-form-row').addClass('remove-form-row')
+        .html('<span aria-hidden="true">-</span>');
+        return false;
+    }
+    function deleteForm(prefix, btn) {
+        var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+        if (total > 1){
+            btn.closest('.form-row').remove();
+            var forms = $('.form-row');
+            $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+            for (var i=0, formCount=forms.length; i<formCount; i++) {
+                $(forms.get(i)).find(':input').each(function() {
+                    updateElementIndex(this, prefix, i);
+                });
+            }
+        }
+        return false;
+    }
+    $(document).on('click', '.add-form-row', function(e){
+        console.log('Button was clicked')
+        e.preventDefault();
+        cloneMore('.form-row:last', 'form');
+        return false;
+    });
+    $(document).on('click', '.remove-form-row', function(e){
+        e.preventDefault();
+        deleteForm('form', $(this));
+        return false;
+    });
+    </script>
+     
+{% endblock %}

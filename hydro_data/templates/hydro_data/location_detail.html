@@ -1,0 +1,155 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% load static %}
+{% block hd_content %}
+  <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'hydro_data:site_list' %}">Sites</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'hydro_data:box_list' slug=location.rack.box.site.slug %}">{{ location.rack.box.site.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:rack_tank_per_box' slug=location.rack.box.slug %}">Box {{ location.rack.box.name }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'hydro_data:loc_per_rack' boxslug=location.rack.box.slug rackslug=location.rack.slug %}">Rack {{ location.rack.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">SQM ID {{ location.name }}</li>
+  </ol>
+  </nav>
+  <div class="row">
+    {% if location.is_open == '1' %}
+      <img src="{% static 'images/noplant.png' %}" alt="location" width='50' height='50'>
+    {% else %}
+      <img src="{% static 'images/plant.png' %}" alt="location" width='50' height='50'>
+    {% endif %}
+    <h1>{{ location.name }}</h1>
+
+    {% if user.is_authenticated %}
+    <div class="float-right">
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          +
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {% if location.is_open == '1' %}
+          <a href="{% url 'hydro_data:add_plantdata_for_loc' boxslug=location.rack.box.slug rackslug=location.rack.slug pk=location.pk %}" class="dropdown-item">Plant</a>
+          {% else %}
+          {% if user.is_superuser %}
+          <a href="{% url 'hydro_data:add_lightdata_for_loc' boxslug=location.rack.box.slug rackslug=location.rack.slug pk=location.pk %}" class="dropdown-item">Light Reading</a>
+          {% endif %}
+          <a href="{% url 'hydro_data:add_harvestdata_for_loc' boxslug=location.rack.box.slug rackslug=location.rack.slug pk=location.pk %}" class="dropdown-item">Harvest</a>
+          {% endif %}
+          {% if user.is_superuser %}
+          <a class='btn btn-default' href="{% url 'hydro_data:location_edit' boxslug=location.rack.box.slug rackslug=location.rack.slug pk=location.pk %}">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+            </svg>
+          </a>
+          <a class='btn btn-default' href="{% url 'hydro_data:location_remove' boxslug=location.rack.box.slug rackslug=location.rack.slug pk=location.pk %}">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm9.854 4.854a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+      {% endif %}
+    {% endif %}
+  </div>
+  <hr>
+  <div class="table-responsive">
+    <table class='table table-hover text-center' id='location-activity-log'>
+      <thead>
+        <th class='align-middle'>Date</th>
+        <th class='align-middle'>Time</th>
+        <th class='align-middle'>Type</th>
+        <th class='align-middle'>Batch</th>
+        <th class='align-middle'>Weight</th>
+        <th class='align-middle'>Wastage</th>
+        <th class='align-middle'>PAR Reading</th>
+        <th class='align-middle'>Grow Medium</th>
+        <th class='align-middle'>Tray</th>
+        <th class='align-middle'>Produce</th>
+        <th class='align-middle'>Staff</th>
+      </thead>
+      {% for activity in activities %}
+        <tr>
+          <td class='align-middle'>{{ activity.date|date:"m/d" }}</td>
+          <td class='align-middle'>{{ activity.time }}</td>
+          <td class='align-middle'>
+            {% if activity.get_model_type == 'HARVEST' %}
+            <a href="{% url 'hydro_data:single_harvestdata' boxslug=activity.rack.box.slug rackslug=activity.rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+              <span class='badge badge-danger'>{{ activity.get_model_type }}</span>
+            </a>
+            {% elif activity.get_model_type == 'PLANT' %}
+            <a href="{% url 'hydro_data:single_plantingdata' boxslug=activity.rack.box.slug rackslug=activity.rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+              <span class='badge badge-success'>{{ activity.get_model_type }}</span>
+            </a>
+            {% elif activity.get_model_type == 'TRANSPLANT' %}
+            <a href="{% url 'hydro_data:single_transplantdata' boxslug=activity.rack.box.slug rackslug=activity.rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+              <span class='badge badge-success'>{{ activity.get_model_type }}</span>
+            </a>
+            {% elif activity.get_model_type == 'SEEDLING WASTAGE' %}
+            <a href="{% url 'hydro_data:single_seedlingwastagedata' boxslug=activity.rack.box.slug rackslug=activity.rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+              <span class='badge badge-danger'>{{ activity.get_model_type }}</span>
+            </a>
+            {% elif activity.get_model_type == 'WASTAGE' %}
+            <a href="{% url 'hydro_data:single_wastagedata' boxslug=activity.rack.box.slug rackslug=activity.rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+              <span class='badge badge-danger'>{{ activity.get_model_type }}</span>
+            </a>
+            {% else %}
+            <a href="{% url 'hydro_data:single_lightreading' boxslug=activity.rack.box.slug rackslug=activity.rack.slug slug=activity.square_meter_id.slug pk=activity.pk %}">
+              <span class='badge badge-warning'>{{ activity.get_model_type }}</span>
+            </a>
+            {% endif %}
+          </td>
+          <td class='align-middle'>
+            {% if activity.seedling_batch_no %}
+            {{ activity.seedling_batch_no.num }}
+            {% else %}
+            --
+            {% endif %}
+          </td>
+          <td class='align-middle'>
+            {% if activity.harvest_weight_kg %}
+            {{ activity.harvest_weight_kg }} kg
+            {% else %}
+            --
+            {% endif %}
+          </td>
+          <td class='align-middle'>
+            {% if activity.wastage_kg %}
+            {{ activity.wastage_kg }} kg
+            {% else %}
+            --
+            {% endif %}
+          </td>
+          <td class='align-middle'>
+            {% if activity.par_reading %}
+            {{ activity.par_reading }}
+            {% else %}
+            --
+            {% endif %}
+          </td>
+          <td class='align-middle'>
+            {% if activity.growmedium %}
+            {{ activity.growmedium }}
+            {% else %}
+            --
+            {% endif %}
+          </td>
+          <td class='align-middle'>
+            {% if activity.tray %}
+            {{ activity.tray }}
+            {% else %}
+            --
+            {% endif %}
+          </td>
+          <td class='align-middle'>
+            {% if activity.produce_type %}
+            {{ activity.produce_type }}
+            {% else %}
+            --
+            {% endif %}
+          </td>
+          <td class='align-middle'>{{ activity.staff }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

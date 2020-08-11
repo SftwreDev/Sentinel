@@ -1,0 +1,25 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+{% load static %}
+{% block hd_content %}
+  <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page">Sites</li>
+  </ol>
+  </nav>
+  <h1>Sites</h1>
+  <hr>
+  <div class="row row-cols-1 row-cols-md-2">
+    {% for site in site_list %}
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded">
+        <a href="{% url 'hydro_data:box_list' slug=site.slug %}">
+        <img src="{% static 'images/pin.png' %}" class="card-img-top" alt="site">
+        <div class="card-body">
+          <h3 class="card-title">{{ site.name }}</h3>
+        </div>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

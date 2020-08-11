@@ -1,0 +1,16 @@
+body {
+    padding-bottom: 120px;
+}
+
+footer{
+  background-color: #f5f5f5;
+}
+
+.footer p {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.spacer{
+  margin-bottom: 20px;
+}

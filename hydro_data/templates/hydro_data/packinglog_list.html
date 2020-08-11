@@ -1,0 +1,42 @@
+{% extends "hydro_data/hydro_data_base.html" %}
+
+
+
+{% block hd_content %}
+
+        <h4 class='display-4'>Packing Log Data</h4>
+        <hr>
+        <div class="card p-2">
+          <table class="table table-sm table-bordered mt-4" style="font-size: 13px;">
+            <thead>
+              <tr>
+                <th scope="col">Timestamp</th>
+                <th scope="col">Date Packaged</th>
+                <th scope="col">Date Harvested</th>
+                <th scope="col">Customer Name</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">No of Packs</th>
+                <th scope="col">Packaged By</th>
+              </tr>
+            </thead>
+            {% for list in packing %}
+            <tbody>
+
+              <tr>
+                <td>{{ list.time }}</td>
+                <td>{{ list.date_packaged }}</td>
+                <td>{{ list.date_harvested }}</td>
+                <td>{{ list.custom_name }}</td>
+                <td>{{ list.prod_name }}</td>
+                <td>{{ list.no_of_packs }}</td>
+                <td>{{ list.packaged_by }}</td>
+              </tr>
+
+            </tbody>
+            {% endfor %}
+          </table>
+        </div>
+        
+
+
+{% endblock  %}
