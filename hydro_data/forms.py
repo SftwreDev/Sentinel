@@ -6,9 +6,7 @@ from . import models
 
 from .models import PackingLog, WeightCategory
 from bootstrap_modal_forms.forms import BSModalModelForm
-from bootstrap_datepicker_plus import DatePickerInput
 
-from tempus_dominus.widgets import DatePicker, TimePicker, DateTimePicker
 
 class UserCreateForm(UserCreationForm):
     class Meta:
